@@ -1,8 +1,12 @@
 import subprocess
 
+print("Started")
+
 data = subprocess.check_output(['netsh', 'wlan', 'show', 'profiles']).decode(
     'utf-8', errors='backslashreplace').split('\n')
 profiles = [i.split(':')[1][1:-1] for i in data if 'All User Profile' in i]
+
+print("Check One")
 
 for profile in profiles:
     try:
@@ -15,4 +19,4 @@ for profile in profiles:
     except subprocess.CalledProcessError:
         print("{:<30}|  {:<}".format(profile, 'ENCODING ERROR'))
 
-input('')
+print("Check Two")
