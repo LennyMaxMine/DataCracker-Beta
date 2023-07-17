@@ -1,11 +1,17 @@
 import subprocess
-
+from datetime import datetime
 print("Started")
+
+current_time = datetime.now()
+formatted_time = current_time.strftime("%d-%m-%Y--%H;%M;%S")  # 24-hour format
+# print(formatted_time)
+
 failed = 0
 
 profiles = subprocess.check_output(['netsh', 'wlan', 'show', 'profile', 'key=clear']).decode(
     'cp850', errors='backslashreplace').split('\n')
 
+output_data = []
 for profile in profiles:
     profile_parts = profile.split(':')
 
@@ -27,54 +33,22 @@ for profile in profiles:
                 line_parts = line.split(':')
                 if len(line_parts) > 1:
                     password = line_parts[1].strip()
+                    output_data.append((profile_name, password, failed))
                 else:
                     password = "Password not found."
             else:
                 failed += 1
                 None
 
-        if password:
-            print("{:<30}|  {:<}".format(profile_name, password))
-        else:
-            print("{:<30}|  {:<}".format(profile_name, "Password not found."))
+    with open(f'{formatted_time}.txt', 'w') as f:
+        f.write("Time on Input: " + formatted_time + "\n")
 
-print("Failed times", int(failed))
+        for data in output_data:
+            profile_name, password, failed = data
+            f.write("SSID: {:<30} | Password: {:<50} | Failed Times: {:<}\n".format(
+                profile_name, password, failed))
 
+        f.write("\nFailed times in total: {}\n".format(failed))
+        f.close()
 
-# except:
-#    print("Failed")
-
-#
-#    for profile in profiles:
-#        try:
-#            if 'Profil für alle Benutzer' in profile:
-#                profile_name = profile.split(':')[1].strip()
-#                print(profile_name)
-#                password_info = subprocess.check_output(['netsh', 'wlan', 'show', 'profile', f'name={profile_name}', 'key=clear']).decode(
-#                    'utf-8', errors='backslashreplace').split('\n')
-#                password = [line.split(':')[1].strip(
-#                ) for line in password_info if "Key Content" in line][0]
-#                print("{:<30}|  {:<}".format(profile_name, password))
-#        except IndexError:
-#            print("{:<30}|  {:<}".format(profile_name, "No Password Found"))
-#        except subprocess.CalledProcessError:
-#            print("{:<30}|  {:<}".format(profile_name, "Encoding Error"))
-#
-#    print("Check Two")
-# except Exception as e:
-#    print("An error occurred:", str(e))
-
-
-#    print("Check Two")
-# except Exception as e:
-#    print("An error occurred:", str(e))
-
-
-#                passwords = [b.split(':')[1][1:-1]
-#                         for b in results if 'Key Content' in b]
-#            password = passwords[0] if passwords else ''
-#            print("{:<30}|  {:<}".format(profile, password))
-#        except subprocess.CalledProcessError:
-#            print("{:<30}|  {:<}".format(profile, 'ENCODING ERROR'))
-#        except IndexError:
-#            print("{:<30}|  {:<}".format(profile, 'No Password Found'))
+print("Failed times in total: ", failed)
