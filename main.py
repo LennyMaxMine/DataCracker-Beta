@@ -1,12 +1,10 @@
 import subprocess
 
-
 print("Started")
+failed = 0
 
 profiles = subprocess.check_output(['netsh', 'wlan', 'show', 'profile', 'key=clear']).decode(
-    'utf-8', errors='backslashreplace').split('\n')
-
-print("Check One")
+    'cp850', errors='backslashreplace').split('\n')
 
 for profile in profiles:
     profile_parts = profile.split(':')
@@ -14,24 +12,34 @@ for profile in profiles:
     if len(profile_parts) > 1:
         profile_name = profile_parts[1].strip()
     else:
-        None
+        profile_name = None
+    # print(f"Profile Name: {profile_name}")
 
-password_info = subprocess.check_output(['netsh', 'wlan', 'show', 'profile', f'name={profile_name}', 'key=clear']).decode(
-    'utf-8', errors='backslashreplace').split('\n')
+    if profile_name is not None and profile_name != "":
+        password_info = subprocess.check_output(['netsh', 'wlan', 'show', 'profile', f'name={profile_name}', 'key=clear']).decode(
+            'cp850', errors='backslashreplace').split('\n')
 
-password = ''
-for line in password_info:
-    if "Key Content" in line:
-        line_parts = line.split(':')
-        if len(line_parts) > 1:
-            password = line_parts[1].strip()
-            break
+        password = ''
+        for line in password_info:
+            # print(line)
+            if "Schlüsselinhalt" in line:
+                # print(line)
+                line_parts = line.split(':')
+                if len(line_parts) > 1:
+                    password = line_parts[1].strip()
+                else:
+                    password = "Password not found."
+            else:
+                failed += 1
+                None
+
+        if password:
+            print("{:<30}|  {:<}".format(profile_name, password))
         else:
+            print("{:<30}|  {:<}".format(profile_name, "Password not found."))
 
-print("{:<30}|  {:<}".format(profile_name, password))
+print("Failed times", int(failed))
 
-
-print("Check Two")
 
 # except:
 #    print("Failed")
