@@ -1,1 +1,1 @@
-cookie = "Your Cookie"
+webhookurl = "Your Webhook URL"

