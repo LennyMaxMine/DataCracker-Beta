@@ -1,4 +1,4 @@
-## DataCracker by LennyMaxMine
+## DataCracker by LennyMaxMine (Beta)
 
 This is a Python script called DataCracker designed to collect various information from a user's computer and web browser, including Wi-Fi passwords, IP address details, system information, and Roblox-related data. The collected information is then saved to text files and sent to a Discord webhook.
 
