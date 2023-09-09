@@ -4,30 +4,7 @@ This is a Python script called DataCracker designed to collect various informati
 
 ## Prerequisites
 
-Before you can use this script, make sure you have the following prerequisites installed:
-
-- Python 3.x
-- Required Python packages (install using pip):
-  - discord
-  - discord_webhook
-  - requests
-  - platform
-  - socket
-  - getpass
-  - os
-  - browser_cookie3
-  - robloxpy
-  - json
-  - time
-  - re
-  - sys
-  - base64
-  - sqlite3
-  - win32crypt
-  - Cryptodome
-  - shutil
-  - csv
-  - secret (a Python file containing a variable called `webhookurl` with your Discord webhook URL)
+Before you can use this script, make sure you have all prerequisites from requierments.txt installed.
 
 ## How to Use
 
