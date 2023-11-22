@@ -28,11 +28,10 @@ wurl = webhookurl
 
 try:
     current_time = datetime.now()
-    formatted_time = current_time.strftime(
-        "%d-%m-%Y--%H;%M;%S")  # 24-hour format
+    formatted_time = current_time.strftime("%d-%m-%Y--%H;%M;%S")  # 24-hour format
     # print(formatted_time)
-except:
-    None
+except Exception as e:
+    print(f"Error occurred while formatting time: {str(e)}")
 
 failed = 0
 failedintotal = 0
